@@ -40,6 +40,7 @@ public:
     PythonConsoleViewImpl* console;
     void setConsole(PythonConsoleViewImpl* console);
     python::object readline();
+    python::object hoge();
 };
 
 
@@ -121,6 +122,11 @@ python::object PythonConsoleIn::readline()
 {
     //! \todo release the GIL inside this function
     return python::str(console->getInputFromConsoleIn());
+}
+
+python::object PythonConsoleIn::hoge()
+{
+  return python::str("aaa");
 }
 
 
