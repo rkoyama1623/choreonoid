@@ -35,6 +35,7 @@ public:
     void setConsole(PythonConsoleViewImpl* console);
     void write(std::string const& text);
     void write_w(std::wstring const& text);
+    void flush();
 };
 
 class PythonConsoleIn
@@ -118,6 +119,10 @@ void PythonConsoleOut::write_w(std::wstring const& text_w)
     text = boost::locale::conv::utf_to_utf<char>(text_w.c_str(), text_w.c_str() + text_w.size());
     write(text);
 }
+void PythonConsoleOut::flush()
+{
+    MessageView::instance()->flush();
+}
 void PythonConsoleIn::setConsole(PythonConsoleViewImpl* console)
 {
     this->console = console;
@@ -175,7 +180,8 @@ PythonConsoleViewImpl::PythonConsoleViewImpl(PythonConsoleView* self)
     python::object consoleOutClass =
         python::class_<PythonConsoleOut>("PythonConsoleOut", python::init<>())
         .def("write", &PythonConsoleOut::write)
-        .def("write", &PythonConsoleOut::write_w);
+        .def("write", &PythonConsoleOut::write_w)
+        .def("flush", &PythonConsoleOut::flush);
     consoleOut = consoleOutClass();
     PythonConsoleOut& consoleOut_ = python::extract<PythonConsoleOut&>(consoleOut);
     consoleOut_.setConsole(this);
