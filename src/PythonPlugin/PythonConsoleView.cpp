@@ -41,9 +41,11 @@ public:
 class PythonConsoleIn
 {
 public:
+    PythonConsoleIn();
     PythonConsoleViewImpl* console;
     void setConsole(PythonConsoleViewImpl* console);
     python::object readline();
+    python::str encoding;
 };
 
 
@@ -123,6 +125,10 @@ void PythonConsoleOut::flush()
 {
     MessageView::instance()->flush();
 }
+PythonConsoleIn::PythonConsoleIn()
+{
+  encoding ="utf-8";
+}
 void PythonConsoleIn::setConsole(PythonConsoleViewImpl* console)
 {
     this->console = console;
@@ -188,7 +194,8 @@ PythonConsoleViewImpl::PythonConsoleViewImpl(PythonConsoleView* self)
 
     python::object consoleInClass =
         python::class_<PythonConsoleIn>("PythonConsoleIn", python::init<>())
-        .def("readline", &PythonConsoleIn::readline);
+        .def("readline", &PythonConsoleIn::readline)
+        .def_readonly("encoding", &PythonConsoleIn::encoding);
     consoleIn = consoleInClass();
     PythonConsoleIn& consoleIn_ = python::extract<PythonConsoleIn&>(consoleIn);
     consoleIn_.setConsole(this);
